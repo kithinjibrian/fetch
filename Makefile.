@@ -1,0 +1,30 @@
+CC = x86_64-w64-mingw32-gcc
+CFLAGS = I../loader/include -Wno-write-strings -fno-exceptions -fmerge-all-constants
+LDFLAGS = -L../loader -lloader -static-libgcc -lwininet -static -lsodium
+
+SRC_DIR = src
+INCLUDE_DIR = include
+BUILD_DIR = build
+
+# Source files
+SRCS = $(shell find $(SRC_DIR) -type f -name '*.c')
+OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
+
+# Executable name
+EXECUTABLE = 1807.exe
+
+.PHONY: all clean
+
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJS)
+	$(CC) $(CFLAGS) $^ -o $@ -I$(INCLUDE_DIR) $(LDFLAGS)
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
+
+clean:
+	rm -rf $(BUILD_DIR) $(EXECUTABLE)
+
+.PHONY: clean
